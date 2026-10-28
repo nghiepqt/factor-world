@@ -109,7 +109,10 @@ def tolerance(x,
     if lower > upper:
         raise ValueError('Lower bound must be <= upper bound.')
     if margin < 0:
-        raise ValueError('`margin` must be non-negative. Current value: {}'.format(margin))
+        # Some task rewards compute margin = ||init_obj - init_tcp|| - eps,
+        # which goes negative when a randomized start puts the gripper within
+        # eps of the object; the step then crashed. Treat it as zero margin.
+        margin = 0.0
 
     in_bounds = np.logical_and(lower <= x, x <= upper)
     if margin == 0:

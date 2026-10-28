@@ -41,7 +41,8 @@ def sample_without_replacement(factor_space: spaces.Space, n: int):
     values = np.arange(
         factor_space.start,
         factor_space.start + factor_space.n)
-    return np.random.choice(values, size=n, replace=False)
+    # Use the space's own seeded RNG; np.random.choice ignored the factor seed.
+    return factor_space.np_random.choice(values, size=n, replace=False)
   elif isinstance(factor_space, spaces.Dict):
     return {
         key: sample_without_replacement(factor_space[key], n)

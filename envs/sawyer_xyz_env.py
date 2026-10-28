@@ -87,8 +87,12 @@ class SawyerMocapBase(MujocoEnv):
     if sim.model.nmocap > 0 and sim.model.eq_data is not None:
       for i in range(sim.model.eq_data.shape[0]):
         if sim.model.eq_type[i] == mujoco_py.const.EQ_WELD:
+          # MuJoCo >= 2.2 weld layout: anchor(3), relpos(3), relquat(4),
+          # torquescale(1). mujoco_py 2.1 only had relpos + relquat.
+          # torquescale=1 leaves the hand tilted for ~200 env steps after
+          # reset; 5.0 matches Farama's Meta-World port to MuJoCo 3.
           sim.model.eq_data[i, :] = np.array(
-              [0., 0., 0., 1., 0., 0., 0.])
+              [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 5.])
     sim.forward()
 
 
